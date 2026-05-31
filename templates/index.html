@@ -8,8 +8,9 @@
 </head>
 <body>
 
+  <!-- HEADER -->
   <header>
-    <img src="/static/logo_cliente.png" alt="Lash Yasmin Gomes">
+    <img src="/static/logo_cliente.png" alt="Lash Yasmin Gomes" class="header-logo">
     <nav>
       <a href="#sobre">Sobre</a>
       <a href="#servicos">Serviços</a>
@@ -17,109 +18,142 @@
     </nav>
   </header>
 
+  <!-- MAIN CONTENT -->
   <main>
 
-    <!-- LADO ESQUERDO -->
-    <section class="left-panel">
+    <div class="hero" id="sobre">
+      <h1>Realce o seu olhar</h1>
+      <p>Extensão de cílios profissional com técnicas exclusivas para valorizar sua beleza natural.</p>
+    </div>
 
-      <div class="hero" id="sobre">
-        <h1>Realce o seu olhar</h1>
-        <p>Extensão de cílios profissional com técnicas exclusivas para valorizar sua beleza natural.</p>
-      </div>
+    <div class="sobre-yasmin">
+      <h2>Quem é Yasmin?</h2>
+      <p>Yasmin Gomes é lashista especializada em extensão de cílios com anos de experiência. Atende de forma personalizada, garantindo conforto, durabilidade e um resultado que combina com o seu estilo.</p>
+    </div>
 
-      <div class="sobre-yasmin">
-        <h2>Quem é Yasmin?</h2>
-        <p>Yasmin Gomes é lashista especializada em extensão de cílios com anos de experiência. Atende de forma personalizada, garantindo conforto, durabilidade e um resultado que combina com o seu estilo. Cada procedimento é realizado com materiais de alta qualidade e total atenção aos detalhes.</p>
-      </div>
-
-      <div class="servicos" id="servicos">
-        <h2>Serviços</h2>
-        <div class="cards">
-
-          <div class="card">
-            <div class="card-header">Volume Egípcio</div>
-            <div class="card-price">R$ 130</div>
-            <div class="card-desc">Técnica clássica que alonga e define com fios individuais. Ideal para um olhar natural e marcante.</div>
-            <div class="card-info">⏱ 2h a 2h30</div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">Volume 5D</div>
-            <div class="card-price">R$ 140</div>
-            <div class="card-desc">Cinco fios por cílio natural para um efeito volumoso e dramático. Perfeito para quem quer impacto.</div>
-            <div class="card-info">⏱ 2h30 a 3h</div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">Volume Mega 5D</div>
-            <div class="card-price">R$ 160</div>
-            <div class="card-desc">Versão intensificada do Volume 5D com ainda mais volume e glamour para ocasiões especiais.</div>
-            <div class="card-info">⏱ 2h a 2h30</div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">Volume Brasileiro</div>
-            <div class="card-price">R$ 100</div>
-            <div class="card-desc">Técnica nacional que combina volume e naturalidade. Ótima opção custo-benefício para o dia a dia.</div>
-            <div class="card-info">⏱ 3h a 3h30</div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">Manutenção</div>
-            <div class="card-price">R$ 110</div>
-            <div class="card-desc">Reposição dos fios para manter o resultado sempre impecável. Indicado a cada 15 a 21 dias.</div>
-            <div class="card-info">⏱ 1h a 1h30</div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">Retirada</div>
-            <div class="card-price">Consulte</div>
-            <div class="card-desc">Remoção segura e sem danos aos cílios naturais, realizada com produtos especializados.</div>
-            <div class="card-info">⏱ 30 min</div>
-          </div>
-
+    <div class="servicos" id="servicos">
+      <h2>Serviços</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-header">Volume Egípcio</div>
+          <div class="card-price">R$ 130</div>
+          <div class="card-desc">Técnica clássica que alonga e define com fios individuais. Ideal para um olhar natural e marcante.</div>
+          <div class="card-info">⏱ 2h a 2h30</div>
         </div>
-      </div>
-
-      <div class="promo" id="agendar">
-        <div class="promo-badge">PROMOÇÃO</div>
-        <div class="promo-text">Terça e quarta com <span>30% de desconto</span></div>
-        <div class="promo-sub">Horários mais tranquilos, mesmo resultado impecável.</div>
-      </div>
-
-      <div class="info-bar">
-        <div class="info-item">📅 Segunda a Sábado</div>
-        <div class="info-item">🕘 09h às 18h</div>
-        <div class="info-item">📍 Rio das Ostras, RJ</div>
-      </div>
-
-    </section>
-
-    <!-- LADO DIREITO — AGENTE -->
-    <section class="right-panel">
-      <div class="chat-header">
-        <div class="chat-status"></div>
-        <div class="chat-title">Lash IA</div>
-        <div class="chat-sub">Assistente Virtual</div>
-      </div>
-
-      <div id="chat-container">
-        <div class="message agent">
-          <div class="sender">Lash IA</div>
-          Olá! Seja bem-vinda ao estúdio Lash Yasmin Gomes 🌸
-          Como posso te ajudar? Posso informar sobre serviços, valores e horários disponíveis.
+        <div class="card">
+          <div class="card-header">Volume 5D</div>
+          <div class="card-price">R$ 140</div>
+          <div class="card-desc">Cinco fios por cílio natural para um efeito volumoso e dramático.</div>
+          <div class="card-info">⏱ 2h30 a 3h</div>
         </div>
+        <div class="card">
+          <div class="card-header">Volume Mega 5D</div>
+          <div class="card-price">R$ 160</div>
+          <div class="card-desc">Versão intensificada com ainda mais volume e glamour para ocasiões especiais.</div>
+          <div class="card-info">⏱ 2h a 2h30</div>
+        </div>
+        <div class="card">
+          <div class="card-header">Volume Brasileiro</div>
+          <div class="card-price">R$ 100</div>
+          <div class="card-desc">Técnica nacional que combina volume e naturalidade. Ótima opção para o dia a dia.</div>
+          <div class="card-info">⏱ 3h a 3h30</div>
+        </div>
+        <div class="card">
+          <div class="card-header">Manutenção</div>
+          <div class="card-price">R$ 110</div>
+          <div class="card-desc">Reposição dos fios para manter o resultado sempre impecável. A cada 15 a 21 dias.</div>
+          <div class="card-info">⏱ 1h a 1h30</div>
+        </div>
+        
       </div>
+    </div>
 
-      <div class="typing" id="typing" style="display:none">Lash IA está digitando...</div>
+    <div class="promo" id="agendar">
+      <div class="promo-badge">PROMOÇÃO</div>
+      <div class="promo-text">Terça e quarta com <span>30% de desconto</span></div>
+      <div class="promo-sub">Horários mais tranquilos, mesmo resultado impecável.</div>
+    </div>
 
-      <div id="input-area">
-        <input type="text" id="user-input" placeholder="Digite sua mensagem..." />
-        <button onclick="enviar()">Enviar</button>
-      </div>
-    </section>
+    <div class="info-bar">
+      <div class="info-item">📅 Segunda a Sábado</div>
+      <div class="info-item">🕘 09h às 18h</div>
+      <div class="info-item">📍 Rio das Ostras, RJ</div>
+    </div>
 
   </main>
+
+  <!-- CHAT LAUNCHER BUTTON -->
+  <button class="chat-launcher" id="chatLauncher" onclick="toggleChat()">
+    <span class="launcher-icon">✦</span>
+  </button>
+
+  <!-- CHAT WIDGET -->
+  <div class="chat-widget" id="chatWidget">
+
+    <!-- CHAT HEADER -->
+    <div class="chat-widget-header">
+      <div class="chat-widget-info">
+        <div class="chat-avatar">✦</div>
+        <div>
+          <div class="chat-widget-title">Lash IA</div>
+          <div class="chat-widget-sub">Assistente Virtual</div>
+        </div>
+      </div>
+      <div class="chat-widget-actions">
+        <button onclick="maximizeChat()" title="Maximizar">⤢</button>
+        <button onclick="resetChat()" title="Reiniciar">↺</button>
+        <button onclick="toggleChat()" title="Fechar">✕</button>
+      </div>
+    </div>
+
+    <!-- CHAT BODY -->
+    <div class="chat-body" id="chatBody">
+
+      <!-- WELCOME SCREEN -->
+      <div class="chat-welcome" id="chatWelcome">
+        <img src="/static/mine_logo.png" alt="Lash Yasmin Gomes" class="chat-logo">
+        <h3>Olá, seja bem-vinda! ✨</h3>
+        <p>Sou a Lash IA e estou aqui para te ajudar com informações sobre serviços, valores, horários e agendamentos.</p>
+        <div class="chat-question">Como posso te ajudar hoje?</div>
+        <div class="quick-buttons">
+          <button onclick="quickSend('Quais são os serviços disponíveis?')">
+            <span>👁</span> Serviços
+          </button>
+          <button onclick="quickSend('Quais são os valores dos serviços?')">
+            <span>🏷</span> Valores
+          </button>
+          <button onclick="quickSend('Como faço para agendar?')">
+            <span>📅</span> Agendamentos
+          </button>
+          <button onclick="quickSend('Tenho outras dúvidas')">
+            <span>❓</span> Outras dúvidas
+          </button>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="chat-messages" id="chatMessages" style="display:none;">
+        <div class="message agent">
+          <div class="sender">Lash IA</div>
+          Olá! Como posso te ajudar hoje? 🌸
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TYPING -->
+    <div class="chat-typing" id="chatTyping" style="display:none;">Lash IA está digitando...</div>
+
+    <!-- INPUT -->
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Digite sua mensagem..." onkeydown="if(event.key==='Enter') sendMessage()">
+      <button onclick="sendMessage()">➤</button>
+    </div>
+
+    <!-- DISCLAIMER -->
+    <div class="chat-disclaimer">✦ Sou uma IA e posso cometer erros. Confirme informações importantes.</div>
+
+  </div>
 
   <script src="/static/script.js"></script>
 </body>
