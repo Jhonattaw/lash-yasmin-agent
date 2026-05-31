@@ -1,6 +1,13 @@
+import sys
+import os
+import datetime
+import json
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from services.calendar_service import get_available_slots
 from flask import Flask, render_template, request, jsonify
 import ollama
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,8 +18,8 @@ model = os.getenv("OLLAMA_MODEL", "mistral:7b")
 
 SYSTEM_PROMPT = """
 Você é a assistente virtual do estúdio Lash Yasmin Gomes.
-Seu nome é Lash IA. Seja simpática, acolhedora e profissional.
-Responda sempre em português brasileiro.
+Seu nome é Lash IA. Seja simpática e profissional.
+Responda em português brasileiro.
 
 SERVIÇOS E VALORES:
 - Volume Egípcio: 2h a 2h30 | R$ 130
@@ -22,7 +29,7 @@ SERVIÇOS E VALORES:
 - Manutenção: 1h a 1h30 | R$ 110 (qualquer procedimento)
 - Retirada: 30 min
 
-REGRAS:
+REGRAS DO ESTÚDIO:
 - Atendimento: segunda a sábado, 09h às 18h. Domingo é folga.
 - Intervalo de 30 minutos entre clientes.
 - Agendamento com no mínimo 2 dias de antecedência.
@@ -55,13 +62,27 @@ ESTILO DE RESPOSTA:
 
 - Para perguntas sobre serviço específico, responda só sobre ele.
 - Nunca invente horários disponíveis.
-- Se perguntarem disponibilidade, peça contato pelo WhatsApp.
+
+🔴 REGRA DE OURO PARA CONSULTA DE AGENDA:
+Toda vez que o usuário perguntar sobre horários, agendamentos, vagas ou datas,
+você DEVE retornar ÚNICA E EXCLUSIVAMENTE a tag abaixo, sem nenhum texto antes ou depois:
+DISPONIBILIDADE_JSON: {"date": "YYYY-MM-DD"}
+
+Exemplo correto:
+DISPONIBILIDADE_JSON: {"date": "2026-06-10"}
+
+Exemplo ERRADO (NÃO FAÇA ISSO):
+Sim, vou verificar! DISPONIBILIDADE_JSON: {"date": "2026-06-10"}
+
+Para perguntas que NÃO sejam de agendamento (valores, serviços, dúvidas), responda normalmente.
+NUNCA use a tag DISPONIBILIDADE_JSON para perguntas de preços ou serviços.
+
 LIMITAÇÃO DE ESCOPO:
 - Você é exclusiva do estúdio Lash Yasmin Gomes.
-- Nunca responda perguntas sobre política, religião, programação, 
-  mecânica ou qualquer assunto fora de beleza, estética, cílios e agendamentos.
-- Se perguntarem algo fora desse escopo, diga educadamente que você 
-  é uma assistente focada apenas nos serviços do estúdio.
+- Nunca responda sobre política, religião, programação, mecânica ou qualquer assunto
+  fora de beleza, estética, cílios e agendamentos.
+- Se perguntarem algo fora do escopo, diga educadamente que você é focada
+  apenas nos serviços do estúdio.
 """
 
 
@@ -82,14 +103,53 @@ def chat():
         return jsonify({"erro": "Mensagem muito longa"}), 400
 
     historico_frontend = data.get("historico", [])
-    mensagens = [{"role": "system", "content": SYSTEM_PROMPT}] + historico_frontend
+
+    # Injeta a data de hoje no prompt dinamicamente
+    data_hoje = datetime.date.today().strftime('%d/%m/%Y')
+    prompt_com_data = SYSTEM_PROMPT + f"\n- Hoje é dia {data_hoje}."
+
+    mensagens = [{"role": "system", "content": prompt_com_data}] + historico_frontend
     mensagens.append({"role": "user", "content": mensagem})
 
     try:
         resposta = ollama.chat(model=model, messages=mensagens)
         texto = resposta["message"]["content"]
+
+        # Interceptação da intenção de disponibilidade
+        if "DISPONIBILIDADE_JSON:" in texto:
+            try:
+                raw_json = texto.split("DISPONIBILIDADE_JSON:")[1]
+                start_idx = raw_json.find('{')
+                end_idx = raw_json.rfind('}') + 1
+
+                if start_idx != -1 and end_idx > start_idx:
+                    clean_json = raw_json[start_idx:end_idx]
+                    data_dict = json.loads(clean_json)
+                    date_str = data_dict['date']
+
+                    slots = get_available_slots(date_str)
+
+                    if slots:
+                        novo_texto = f"✨ Horários disponíveis para {date_str}: {', '.join(slots)}. Qual desses prefere?"
+                    else:
+                        novo_texto = f"Não temos horários livres para {date_str}. Teria outro dia?"
+
+                    # skip_history evita que a resposta de slots contamine o histórico
+                    return jsonify({"resposta": novo_texto, "skip_history": True})
+                else:
+                    raise ValueError("JSON não encontrado na resposta.")
+
+            except Exception as e:
+                print(f"Erro ao processar data: {e} | IA gerou: {texto}")
+                return jsonify({
+                    "resposta": "Desculpe, me confundi com a data. Poderia dizer novamente que dia você quer?",
+                    "skip_history": True
+                })
+
         return jsonify({"resposta": texto})
+
     except Exception as e:
+        print(f"Erro geral na IA: {e}")
         return jsonify({"erro": "IA indisponível. Tente novamente."}), 500
 
 

@@ -6,18 +6,18 @@ const chatInput    = document.getElementById('chatInput');
 const chatBody     = document.getElementById('chatBody');
 const chatLauncher = document.getElementById('chatLauncher');
 
-
-let sizeState = 0
-let isSending = false;
+let sizeState  = 0;
+let isSending  = false;
 let chatHistory = [];
 
+// ── Toggle open/close ──
 function toggleChat() {
   chatWidget.classList.toggle('open');
-   chatLauncher.style.display  = 
+  chatLauncher.style.display =
     chatWidget.classList.contains('open') ? 'none' : 'flex';
-    
 }
 
+// ── Ciclo de tamanho: pequeno → médio → tela cheia ──
 function cycleSize() {
   sizeState = (sizeState + 1) % 3;
   chatWidget.classList.remove('medium', 'maximized');
@@ -25,6 +25,7 @@ function cycleSize() {
   if (sizeState === 2) chatWidget.classList.add('maximized');
 }
 
+// ── Reset conversa ──
 function resetChat() {
   chatHistory = [];
   chatMessages.innerHTML = '';
@@ -34,12 +35,14 @@ function resetChat() {
   chatInput.value = '';
 }
 
+// ── Botões de atalho ──
 function quickSend(text) {
   chatWelcome.style.display  = 'none';
   chatMessages.style.display = 'flex';
   sendMessage(text);
 }
 
+// ── Enviar mensagem ──
 async function sendMessage(text) {
   if (isSending) return;
 
@@ -75,8 +78,11 @@ async function sendMessage(text) {
     if (data.erro) {
       addMessage(data.erro, 'agent');
     } else {
-      chatHistory.push({ role: 'user',      content: msg         });
-      chatHistory.push({ role: 'assistant', content: data.resposta });
+      // Só adiciona ao histórico se não for resposta de slots do calendário
+      if (!data.skip_history) {
+        chatHistory.push({ role: 'user',      content: msg          });
+        chatHistory.push({ role: 'assistant', content: data.resposta });
+      }
       addMessage(data.resposta, 'agent');
     }
 
@@ -92,13 +98,14 @@ async function sendMessage(text) {
   }
 }
 
+// ── Adiciona mensagem no DOM ──
 function addMessage(text, type) {
   const div = document.createElement('div');
   div.className = `message ${type}`;
 
   if (type === 'agent') {
     const sender = document.createElement('div');
-    sender.className = 'sender';
+    sender.className   = 'sender';
     sender.textContent = 'Lash IA';
 
     const content = document.createElement('div');
@@ -114,6 +121,7 @@ function addMessage(text, type) {
   scrollBottom();
 }
 
+// ── Scroll para o fim ──
 function scrollBottom() {
   chatBody.scrollTop = chatBody.scrollHeight;
 }
