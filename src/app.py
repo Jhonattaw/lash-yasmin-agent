@@ -34,7 +34,7 @@ REGRAS:
 ESTILO DE RESPOSTA:
 - Seja breve e direta. Máximo 3 linhas por resposta.
 - Nunca despeje tudo de uma vez.
-- Quando listar serviços, use esse formato exato:
+- Quando listar serviços use esse formato:
 
 ✨ Serviços disponíveis:
 
@@ -53,31 +53,39 @@ ESTILO DE RESPOSTA:
 - Manutenção — R$ 110
   ⏱ 1h a 1h30
 
-
-- Para perguntas sobre um serviço específico, responda só sobre ele.
+- Para perguntas sobre serviço específico, responda só sobre ele.
 - Nunca invente horários disponíveis.
-- Se perguntarem disponibilidade, peça para entrar em contato pelo WhatsApp.
+- Se perguntarem disponibilidade, peça contato pelo WhatsApp.
 """
 
-historico = [{"role": "system", "content": SYSTEM_PROMPT}]
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
-    mensagem = data.get("mensagem", "")
-    
-    historico.append({"role": "user", "content": mensagem})
-    
-    resposta = ollama.chat(model=model, messages=historico)
-    texto = resposta["message"]["content"]
-    
-    historico.append({"role": "assistant", "content": texto})
-    
-    return jsonify({"resposta": texto})
+    mensagem = data.get("mensagem", "").strip()
+
+    if not mensagem:
+        return jsonify({"erro": "Mensagem vazia"}), 400
+
+    if len(mensagem) > 1000:
+        return jsonify({"erro": "Mensagem muito longa"}), 400
+
+    historico_frontend = data.get("historico", [])
+    mensagens = [{"role": "system", "content": SYSTEM_PROMPT}] + historico_frontend
+    mensagens.append({"role": "user", "content": mensagem})
+
+    try:
+        resposta = ollama.chat(model=model, messages=mensagens)
+        texto = resposta["message"]["content"]
+        return jsonify({"resposta": texto})
+    except Exception as e:
+        return jsonify({"erro": "IA indisponível. Tente novamente."}), 500
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=os.getenv("DEBUG", "true") == "true")

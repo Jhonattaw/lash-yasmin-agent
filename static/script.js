@@ -6,20 +6,24 @@ const chatInput    = document.getElementById('chatInput');
 const chatBody     = document.getElementById('chatBody');
 
 let isMaximized = false;
+let isSending   = false;
+let chatHistory = [];
 
-// ── Toggle open/close ──
 function toggleChat() {
   chatWidget.classList.toggle('open');
+   document.getElementById('chatLauncher').style.display = 
+    chatWidget.classList.contains('open') ? 'none' : 'flex';
+    
 }
 
-// ── Maximize / restore ──
 function maximizeChat() {
   isMaximized = !isMaximized;
   chatWidget.classList.toggle('maximized', isMaximized);
+  
 }
 
-// ── Reset conversation ──
 function resetChat() {
+  chatHistory = [];
   chatMessages.innerHTML = `
     <div class="message agent">
       <div class="sender">Lash IA</div>
@@ -30,56 +34,86 @@ function resetChat() {
   chatInput.value = '';
 }
 
-// ── Quick buttons ──
 function quickSend(text) {
   chatWelcome.style.display  = 'none';
   chatMessages.style.display = 'flex';
   sendMessage(text);
 }
 
-// ── Send message ──
 async function sendMessage(text) {
+  if (isSending) return;
+
   const msg = text || chatInput.value.trim();
   if (!msg) return;
 
-  // Show messages panel
   chatWelcome.style.display  = 'none';
   chatMessages.style.display = 'flex';
 
   addMessage(msg, 'user');
   chatInput.value = '';
+  isSending = true;
   chatTyping.style.display = 'block';
   scrollBottom();
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
 
   try {
     const res = await fetch('/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mensagem: msg })
+      body: JSON.stringify({
+        mensagem: msg,
+        historico: chatHistory
+      }),
+      signal: controller.signal
     });
+
     const data = await res.json();
-    chatTyping.style.display = 'none';
-    addMessage(data.resposta, 'agent');
+    clearTimeout(timeout);
+
+    if (data.erro) {
+      addMessage(data.erro, 'agent');
+    } else {
+      chatHistory.push({ role: 'user',      content: msg         });
+      chatHistory.push({ role: 'assistant', content: data.resposta });
+      addMessage(data.resposta, 'agent');
+    }
+
   } catch (err) {
+    clearTimeout(timeout);
+    const msg_erro = err.name === 'AbortError'
+      ? 'A resposta demorou demais. Tente novamente.'
+      : 'Erro de conexão. Verifique e tente novamente.';
+    addMessage(msg_erro, 'agent');
+  } finally {
+    isSending = false;
     chatTyping.style.display = 'none';
-    addMessage('Ops! Não consegui conectar. Tente novamente.', 'agent');
   }
 }
 
-// ── Add message to DOM ──
 function addMessage(text, type) {
   const div = document.createElement('div');
   div.className = `message ${type}`;
+
   if (type === 'agent') {
-    div.innerHTML = `<div class="sender">Lash IA</div>${text}`;
+    const sender = document.createElement('div');
+    sender.className = 'sender';
+    sender.textContent = 'Lash IA';
+
+    const content = document.createElement('div');
+    content.textContent = text;
+
+    div.appendChild(sender);
+    div.appendChild(content);
   } else {
     div.textContent = text;
   }
+
   chatMessages.appendChild(div);
   scrollBottom();
 }
 
-// ── Scroll to bottom ──
 function scrollBottom() {
   chatBody.scrollTop = chatBody.scrollHeight;
 }

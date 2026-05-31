@@ -8,17 +8,21 @@
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <img src="/static/logo_cliente.png" alt="Lash Yasmin Gomes" class="header-logo">
-    <nav>
-      <a href="#sobre">Sobre</a>
-      <a href="#servicos">Serviços</a>
-      <a href="#agendar">Agendar</a>
-    </nav>
-  </header>
 
-  <!-- MAIN CONTENT -->
+  <header>
+    
+  <nav>
+    <a href="#sobre">Sobre</a>
+    <a href="#servicos">Serviços</a>
+    <a href="#agendar">Agendar</a>
+  </nav>
+</header>
+
+<div class="hero-banner">
+  <img src="/static/logo_cliente.png" alt="Lash Yasmin Gomes">
+</div>
+
+ 
   <main>
 
     <div class="hero" id="sobre">
@@ -83,6 +87,7 @@
   </main>
 
   <!-- CHAT LAUNCHER BUTTON -->
+   
   <button class="chat-launcher" id="chatLauncher" onclick="toggleChat()">
     <span class="launcher-icon">✦</span>
   </button>
@@ -150,7 +155,7 @@
       <button onclick="sendMessage()">➤</button>
     </div>
 
-    <!-- DISCLAIMER -->
+   
     <div class="chat-disclaimer">✦ Sou uma IA e posso cometer erros. Confirme informações importantes.</div>
 
   </div>
