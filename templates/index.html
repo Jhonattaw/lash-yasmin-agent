@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lash Yasmin Gomes</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <header>
+    <img src="/static/logo_cliente.png" alt="Lash Yasmin Gomes">
+    <div class="subtitle">Assistente Virtual</div>
+  </header>
+
+  <div id="chat-container">
+    <div class="message agent">
+      <div class="sender">Lash IA</div>
+      Olá! Seja bem-vinda ao estúdio Lash Yasmin Gomes 🌸
+      Como posso te ajudar hoje? Posso informar sobre nossos serviços,
+      valores e disponibilidade de horários.
+    </div>
+  </div>
+
+  <div class="typing" id="typing" style="display:none">Lash IA está digitando...</div>
+
+  <div id="input-area">
+    <input type="text" id="user-input" placeholder="Digite sua mensagem..." />
+    <button onclick="enviar()">Enviar</button>
+  </div>
+
+  <script src="/static/script.js"></script>
+  
+
+</body>
+</html>
