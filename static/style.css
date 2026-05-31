@@ -250,6 +250,11 @@ main {
   border-radius: 0;
 }
 
+.chat-widget.medium {
+  width: 580px;
+  height: 750px;
+}
+
 /* ── WIDGET HEADER ── */
 .chat-widget-header {
   display: flex;
@@ -306,6 +311,7 @@ main {
 }
 
 .chat-widget-actions button:hover { color: var(--rose); }
+
 
 /* ── CHAT BODY ── */
 .chat-body {

@@ -6,8 +6,9 @@ const chatInput    = document.getElementById('chatInput');
 const chatBody     = document.getElementById('chatBody');
 const chatLauncher = document.getElementById('chatLauncher');
 
-let isMaximized = false;
-let isSending   = false;
+
+let sizeState = 0
+let isSending = false;
 let chatHistory = [];
 
 function toggleChat() {
@@ -17,10 +18,11 @@ function toggleChat() {
     
 }
 
-function maximizeChat() {
-  isMaximized = !isMaximized;
-  chatWidget.classList.toggle('maximized', isMaximized);
-  
+function cycleSize() {
+  sizeState = (sizeState + 1) % 3;
+  chatWidget.classList.remove('medium', 'maximized');
+  if (sizeState === 1) chatWidget.classList.add('medium');
+  if (sizeState === 2) chatWidget.classList.add('maximized');
 }
 
 function resetChat() {
