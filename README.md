@@ -56,19 +56,7 @@ python src/app.py
 6. Acesse no navegador:
 http://localhost:5000
 
-## Estrutura do projeto
-lash-yasmin-agent/
-├── src/
-│   └── app.py          # agente + servidor Flask
-├── static/
-│   ├── style.css       # identidade visual
-│   ├── script.js       # lógica do chat
-│   └── logo_cliente.png
-├── templates/
-│   └── index.html      # interface web
-├── docs/
-│   └── requisitos.md   # levantamento de requisitos
-└── .env
+
 
 ## Próximos passos
 - Integração com Google Calendar API para verificar horários reais
