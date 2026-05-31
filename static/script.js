@@ -4,6 +4,7 @@ const chatMessages = document.getElementById('chatMessages');
 const chatTyping   = document.getElementById('chatTyping');
 const chatInput    = document.getElementById('chatInput');
 const chatBody     = document.getElementById('chatBody');
+const chatLauncher = document.getElementById('chatLauncher');
 
 let isMaximized = false;
 let isSending   = false;
@@ -11,7 +12,7 @@ let chatHistory = [];
 
 function toggleChat() {
   chatWidget.classList.toggle('open');
-   document.getElementById('chatLauncher').style.display = 
+   chatLauncher.style.display  = 
     chatWidget.classList.contains('open') ? 'none' : 'flex';
     
 }
@@ -24,11 +25,8 @@ function maximizeChat() {
 
 function resetChat() {
   chatHistory = [];
-  chatMessages.innerHTML = `
-    <div class="message agent">
-      <div class="sender">Lash IA</div>
-      Olá! Como posso te ajudar hoje? 🌸
-    </div>`;
+  chatMessages.innerHTML = '';
+  addMessage('Olá! Como posso te ajudar hoje? 🌸', 'agent');
   chatWelcome.style.display  = 'flex';
   chatMessages.style.display = 'none';
   chatInput.value = '';
