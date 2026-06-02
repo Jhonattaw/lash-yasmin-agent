@@ -108,6 +108,8 @@ Ao listar serviços, use exatamente este formato:
 
 Quando o cliente quiser SABER os horários disponíveis, retorne ÚNICA E EXCLUSIVAMENTE:
 DISPONIBILIDADE_JSON: {"date": "YYYY-MM-DD"}
+  Se o cliente confirmar que quer ver horários de uma data específica 
+  que já foi mencionada, gere o DISPONIBILIDADE_JSON para essa data imediatamente.
 
 Nenhum texto antes ou depois. Apenas a tag.
 
@@ -191,8 +193,9 @@ def gerar_resposta(mensagem, historico_frontend):
                 if dias < 1:
                     data_minima = datetime.date.today() + datetime.timedelta(days=1)
                     novo_texto = (
-                        f"Para garantir seu atendimento com qualidade, não agendamos para o mesmo dia 💕 "
-                        f"A data mais próxima é {data_minima.strftime('%d/%m/%Y')}. Quer ver os horários desse dia?"
+                        f"Não agendamos para o mesmo dia 💕 "
+                        f"A data mais próxima disponível é {data_minima.strftime('%d/%m/%Y')}. "
+                        f"Quer ver os horários disponíveis?"
                     )
                     return {"resposta": novo_texto}
 
@@ -229,9 +232,9 @@ def gerar_resposta(mensagem, historico_frontend):
                 dados = json.loads(raw_json[start_idx:end_idx])
                 hora = int(dados['time'].split(':')[0])
                 if hora < 9 or hora >= 18:
-                 return {
-                    "resposta": "Nosso horário de atendimento é das 9h às 18h 💕 Qual horário dentro desse período você prefere?"
-                }
+                    return {
+                        "resposta": "Nosso horário de atendimento é das 9h às 18h 💕 Qual horário dentro desse período você prefere?"
+                    }
                 create_event(
                     date_str=dados['date'],
                     time_str=dados['time'],
