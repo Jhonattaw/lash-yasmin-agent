@@ -488,3 +488,61 @@ main {
   flex-shrink: 0;
 }
 
+
+/* ───────────────────────────── */
+/* RESPONSIVO — MOBILE            */
+/* ───────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Header e navegação centralizados e compactos */
+  header {
+    padding: 12px 20px;
+    justify-content: center;
+  }
+
+  nav a {
+    margin: 0 10px;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  /* Banner mais baixo no celular */
+  .hero-banner {
+    height: 200px;
+  }
+
+  /* Conteúdo com respiro lateral menor */
+  main {
+    padding: 32px 20px 100px;
+  }
+
+  .hero h1 {
+    font-size: 30px;
+  }
+
+  /* Barra de informações empilhada, uma embaixo da outra */
+  .info-bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Launcher na posição padrão de botão flutuante */
+  .chat-launcher {
+    bottom: 24px;
+    right: 20px;
+  }
+
+  /* Chat ocupa quase a tela toda, sem transbordar */
+  .chat-widget,
+  .chat-widget.medium {
+    width: calc(100vw - 20px);
+    height: calc(100dvh - 130px);
+    right: 10px;
+    left: 10px;
+    bottom: 96px;
+  }
+
+  .chat-logo {
+    max-width: 220px;
+  }
+}

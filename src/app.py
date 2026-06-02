@@ -34,7 +34,7 @@ SERVIÇOS E VALORES:
 - Volume Mega 5D: 2h a 2h30 | R$ 160
 - Volume Brasileiro: 3h a 3h30 | R$ 100
 - Manutenção: 1h a 1h30 | R$ 110 (qualquer procedimento)
-- Retirada: 30 min
+
 
 REGRAS DO ESTÚDIO:
 - Atendimento: segunda a sábado, 09h às 18h. Domingo é folga.
