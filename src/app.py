@@ -9,6 +9,7 @@ from services.calendar_service import get_available_slots
 from flask import Flask, render_template, request, jsonify
 import ollama
 from dotenv import load_dotenv
+from langsmith import traceable  
 
 load_dotenv()
 
@@ -91,6 +92,56 @@ def index():
     return render_template("index.html")
 
 
+# ── Lógica de IA separada para o LangSmith rastrear com input/output limpos ──
+
+@traceable
+def gerar_resposta(mensagem, historico_frontend):
+    # Injeta a data de hoje no prompt dinamicamente
+    data_hoje = datetime.date.today().strftime('%d/%m/%Y')
+    prompt_com_data = SYSTEM_PROMPT + f"\n- Hoje é dia {data_hoje}."
+
+    mensagens = [{"role": "system", "content": prompt_com_data}] + historico_frontend
+    mensagens.append({"role": "user", "content": mensagem})
+
+    resposta = ollama.chat(model=model, messages=mensagens)
+    texto = resposta["message"]["content"]
+
+    # Interceptação da intenção de disponibilidade
+    if "DISPONIBILIDADE_JSON:" in texto:
+        try:
+            raw_json = texto.split("DISPONIBILIDADE_JSON:")[1]
+            start_idx = raw_json.find('{')
+            end_idx = raw_json.rfind('}') + 1
+
+            if start_idx != -1 and end_idx > start_idx:
+                clean_json = raw_json[start_idx:end_idx]
+                data_dict = json.loads(clean_json)
+                date_str = data_dict['date']
+
+                slots = get_available_slots(date_str)
+
+                if slots:
+                    novo_texto = f"✨ Horários disponíveis para {date_str}: {', '.join(slots)}. Qual desses prefere?"
+                else:
+                    novo_texto = f"Não temos horários livres para {date_str}. Teria outro dia?"
+
+                # skip_history evita que a resposta de slots contamine o histórico
+                return {"resposta": novo_texto, "skip_history": True}
+            else:
+                raise ValueError("JSON não encontrado na resposta.")
+
+        except Exception as e:
+            print(f"Erro ao processar data: {e} | IA gerou: {texto}")
+            return {
+                "resposta": "Desculpe, me confundi com a data. Poderia dizer novamente que dia você quer?",
+                "skip_history": True
+            }
+
+    return {"resposta": texto}
+
+
+# ── Rota fina: só valida e converte pra JSON ──
+
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.json
@@ -104,50 +155,8 @@ def chat():
 
     historico_frontend = data.get("historico", [])
 
-    # Injeta a data de hoje no prompt dinamicamente
-    data_hoje = datetime.date.today().strftime('%d/%m/%Y')
-    prompt_com_data = SYSTEM_PROMPT + f"\n- Hoje é dia {data_hoje}."
-
-    mensagens = [{"role": "system", "content": prompt_com_data}] + historico_frontend
-    mensagens.append({"role": "user", "content": mensagem})
-
     try:
-        resposta = ollama.chat(model=model, messages=mensagens)
-        texto = resposta["message"]["content"]
-
-        # Interceptação da intenção de disponibilidade
-        if "DISPONIBILIDADE_JSON:" in texto:
-            try:
-                raw_json = texto.split("DISPONIBILIDADE_JSON:")[1]
-                start_idx = raw_json.find('{')
-                end_idx = raw_json.rfind('}') + 1
-
-                if start_idx != -1 and end_idx > start_idx:
-                    clean_json = raw_json[start_idx:end_idx]
-                    data_dict = json.loads(clean_json)
-                    date_str = data_dict['date']
-
-                    slots = get_available_slots(date_str)
-
-                    if slots:
-                        novo_texto = f"✨ Horários disponíveis para {date_str}: {', '.join(slots)}. Qual desses prefere?"
-                    else:
-                        novo_texto = f"Não temos horários livres para {date_str}. Teria outro dia?"
-
-                    # skip_history evita que a resposta de slots contamine o histórico
-                    return jsonify({"resposta": novo_texto, "skip_history": True})
-                else:
-                    raise ValueError("JSON não encontrado na resposta.")
-
-            except Exception as e:
-                print(f"Erro ao processar data: {e} | IA gerou: {texto}")
-                return jsonify({
-                    "resposta": "Desculpe, me confundi com a data. Poderia dizer novamente que dia você quer?",
-                    "skip_history": True
-                })
-
-        return jsonify({"resposta": texto})
-
+        return jsonify(gerar_resposta(mensagem, historico_frontend))
     except Exception as e:
         print(f"Erro geral na IA: {e}")
         return jsonify({"erro": "IA indisponível. Tente novamente."}), 500

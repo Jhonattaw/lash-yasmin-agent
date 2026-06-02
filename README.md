@@ -30,18 +30,33 @@ Agente de IA treinado com as regras de negócio do estúdio, capaz de:
 ## Tecnologias
 - Python 3.11
 - Flask (servidor web)
-- Ollama + Mistral 7B (modelo local, 100% offline)
+- Ollama + Mistral 7B (modelo de linguagem rodando localmente)
 - Google Calendar API (consulta de horários reais)
+- LangSmith (observabilidade e tracing das conversas do agente)
 - python-dotenv
 - pytz (fuso horário América/São Paulo)
 - HTML, CSS e JavaScript
+
+## Decisões Técnicas
+- **Histórico stateless no frontend (`skip_history`):** respostas de horários não contaminam o contexto da conversa.
+- **Tag `DISPONIBILIDADE_JSON`:** o modelo sinaliza a intenção de agendamento numa única chamada, sem uma segunda ida ao LLM.
+- **Data injetada dinamicamente no system prompt:** o agente sabe a data de hoje e entende "amanhã", "essa sexta", etc.
+- **Lógica de IA isolada em `gerar_resposta()` com `@traceable`:** permite observar cada conversa no LangSmith (entrada, saída, latência) sem misturar com a camada web.
+- **Fuso `America/Sao_Paulo` com pytz:** horários sempre no horário do estúdio.
+
+## Observabilidade
+
+As conversas do agente são rastreadas com LangSmith. Cada mensagem
+gera um trace com a entrada do usuário, a resposta gerada e o tempo
+de processamento — o que permite depurar comportamentos e, no futuro,
+avaliar a qualidade das respostas de forma sistemática.
 
 ## Arquitetura
 
 ```
 lash-yasmin-agent/
 ├── src/
-│   └── app.py               # servidor Flask + orquestração do agente
+│   └── app.py               # servidor Flask + orquestração (função gerar_resposta com @traceable)
 ├── services/
 │   └── calendar_service.py  # integração Google Calendar API
 ├── static/
@@ -52,6 +67,7 @@ lash-yasmin-agent/
 ├── docs/
 │   └── requisitos.md        # levantamento de requisitos do negócio
 ├── credentialsg.json        # credenciais Google (não commitado)
+├── requirements.txt
 └── .env
 ```
 
@@ -72,7 +88,7 @@ cd lash-yasmin-agent
 ```
 py -3.11 -m venv venv
 venv\Scripts\activate
-pip install ollama flask python-dotenv pytz google-api-python-client google-auth
+pip install -r requirements.txt
 ```
 
 4. Configure as credenciais do Google Calendar:
@@ -84,6 +100,11 @@ pip install ollama flask python-dotenv pytz google-api-python-client google-auth
 5. Crie o arquivo `.env` na raiz:
 ```
 OLLAMA_MODEL=mistral:7b
+
+# Observabilidade (opcional — sem isso o app roda igual, só sem tracing)
+LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=sua_chave_lsv2_aqui
+LANGSMITH_PROJECT=lash-yasmin-agent
 ```
 
 6. Rode a aplicação:
@@ -97,5 +118,7 @@ http://localhost:5000
 ```
 
 ## Próximos passos
-- Deploy na Vercel com modelo via Groq API (link público)
-- Sistema de confirmação de sinal via WhatsApp API (Twilio)
+- Trocar Ollama por Groq API para respostas em 1-2 segundos
+- Deploy na Vercel com link público
+- Permitir que o agente crie o evento no Google Calendar (hoje apenas consulta)
+- Confirmação de sinal via WhatsApp API (Twilio)
