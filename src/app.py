@@ -8,12 +8,18 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from services.calendar_service import get_available_slots
 from flask import Flask, render_template, request, jsonify
 import ollama
+from groq import Groq
 from dotenv import load_dotenv
 from langsmith import traceable  
 
 load_dotenv()
 
-app = Flask(__name__, template_folder="../templates", static_folder="../static")
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+app = Flask(__name__,
+            template_folder=os.path.join(BASE_DIR, "templates"),
+            static_folder=os.path.join(BASE_DIR, "static"))
 
 model = os.getenv("OLLAMA_MODEL", "mistral:7b")
 
@@ -103,8 +109,12 @@ def gerar_resposta(mensagem, historico_frontend):
     mensagens = [{"role": "system", "content": prompt_com_data}] + historico_frontend
     mensagens.append({"role": "user", "content": mensagem})
 
-    resposta = ollama.chat(model=model, messages=mensagens)
-    texto = resposta["message"]["content"]
+    resposta = client.chat.completions.create(
+    model=os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
+    messages=mensagens,
+    temperature=0.5,
+)
+    texto = resposta.choices[0].message.content
 
     # Interceptação da intenção de disponibilidade
     if "DISPONIBILIDADE_JSON:" in texto:
