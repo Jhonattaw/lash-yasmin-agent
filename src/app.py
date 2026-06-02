@@ -2,6 +2,7 @@ import sys
 import os
 import datetime
 import json
+import pytz
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -60,6 +61,10 @@ ESTILO DE RESPOSTA:
 - Nunca despeje todas as informações de uma vez.
 - Para perguntas sobre um serviço específico, fale só sobre ele.
 - Se você NÃO souber algo, diga que vai confirmar com a Yasmin. NUNCA invente uma resposta.
+- Se o usuário enviar resposta vaga ou fora de contexto ("Sim", "Ok", "S" sozinho), 
+  retome naturalmente com "Como posso te ajudar?"
+- Nunca diga que uma informação foi mencionada antes. Se necessário, repita-a naturalmente.
+- Ao mencionar datas, use o formato DD/MM. Não fale o dia da semana para evitar erros.
 - Ao listar serviços, use exatamente este formato:
 
 ✨ Serviços disponíveis:
@@ -122,8 +127,10 @@ def index():
 
 @traceable
 def gerar_resposta(mensagem, historico_frontend):
-    data_hoje = datetime.date.today().strftime('%d/%m/%Y')
-    prompt_com_data = SYSTEM_PROMPT + f"\n- Hoje é dia {data_hoje}."
+    fuso = pytz.timezone('America/Sao_Paulo')
+    data_hoje = datetime.datetime.now(fuso).strftime('%d/%m/%Y')
+    data_hoje_iso = datetime.datetime.now(fuso).strftime('%Y-%m-%d')
+    prompt_com_data = SYSTEM_PROMPT + f"\n- Hoje é dia {data_hoje} ({data_hoje_iso})."
 
     mensagens = [{"role": "system", "content": prompt_com_data}] + historico_frontend
     mensagens.append({"role": "user", "content": mensagem})
