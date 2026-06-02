@@ -153,6 +153,7 @@ def index():
 
 @traceable
 def gerar_resposta(mensagem, historico_frontend):
+    historico_recente = historico_frontend[-10:]
     fuso = pytz.timezone('America/Sao_Paulo')
     data_hoje = datetime.datetime.now(fuso).strftime('%d/%m/%Y')
     data_hoje_iso = datetime.datetime.now(fuso).strftime('%Y-%m-%d')
@@ -160,7 +161,7 @@ def gerar_resposta(mensagem, historico_frontend):
         f"\n- Hoje é dia {data_hoje} ({data_hoje_iso})."
 
     mensagens = [{"role": "system", "content": prompt_com_data}
-                 ] + historico_frontend
+                 ] + historico_recente
     mensagens.append({"role": "user", "content": mensagem})
 
     resposta = client.chat.completions.create(
