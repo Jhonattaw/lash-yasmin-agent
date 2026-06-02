@@ -5,6 +5,7 @@ const chatTyping   = document.getElementById('chatTyping');
 const chatInput    = document.getElementById('chatInput');
 const chatBody     = document.getElementById('chatBody');
 const chatLauncher = document.getElementById('chatLauncher');
+const conversationId = crypto.randomUUID();
 
 let sizeState  = 0;
 let isSending  = false;
@@ -67,7 +68,8 @@ async function sendMessage(text) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         mensagem: msg,
-        historico: chatHistory
+        historico: chatHistory,
+        conversation_id: conversationId
       }),
       signal: controller.signal
     });
